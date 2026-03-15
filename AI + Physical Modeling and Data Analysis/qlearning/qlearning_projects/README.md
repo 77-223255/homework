@@ -8,7 +8,7 @@ A collection of projects to help you understand Qlearning step by step.
 
 | # | Project | Concept | Difficulty | Status |
 |---|---------|---------|------------|--------|
-| 01 | [Tic-Tac-Toe](./01_tic_tac_toe/) | Q-Learning basics | ⭐ Beginner | ✅ Ready |
+| 01 | Tic-Tac-Toe | Q-Learning basics | ⭐ Beginner | ✅ Ready |
 | 02 | Frozen Lake | Grid world, slippery ice | ⭐⭐ Beginner+ | ✅ Ready |
 | 03 | Blackjack | Probability, decisions | ⭐⭐ Intermediate | ✅ Ready |
 | 04 | Simple DQN | Neural networks | ⭐⭐⭐ Intermediate | ✅ Ready |
