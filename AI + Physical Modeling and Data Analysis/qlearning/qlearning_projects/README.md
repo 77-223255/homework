@@ -1,6 +1,6 @@
-# QLearning Educational Projects 🎮
+# Qlearning Educational Projects 🎮
 
-A collection of projects to help you understand reinforcement learning step by step.
+A collection of projects to help you understand Qlearning step by step.
 
 ---
 
