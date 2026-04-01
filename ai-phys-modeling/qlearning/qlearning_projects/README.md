@@ -1,113 +1,28 @@
-# Qlearning Educational Projects 🎮
+# qlearning_projects
 
-A collection of projects to help you understand Qlearning step by step.
+渐进式 Q-Learning 学习项目。
 
----
+## 学习路径
 
-## 📚 Project List
+| 序号 | 项目 | 核心概念 |
+|------|------|----------|
+| [`01_tic_tac_toe`](./01_tic_tac_toe/) | Q-Table 基础 |
+| [`02_frozen_lake`](./02_frozen_lake/) | 随机环境 |
+| [`03_blackjack`](./03_blackjack/) | 概率与风险 |
+| [`04_dqn_intro`](./04_dqn_intro/) | 深度 Q 网络 |
 
-| # | Project | Concept | Difficulty | Status |
-|---|---------|---------|------------|--------|
-| 01 | Tic-Tac-Toe | Q-Learning basics | ⭐ Beginner | ✅ Ready |
-| 02 | Frozen Lake | Grid world, slippery ice | ⭐⭐ Beginner+ | ✅ Ready |
-| 03 | Blackjack | Probability, decisions | ⭐⭐ Intermediate | ✅ Ready |
-| 04 | Simple DQN | Neural networks | ⭐⭐⭐ Intermediate | ✅ Ready |
+## 通用结构
 
----
+每个项目包含：
+- `agent.py` — Q-Learning / DQN 智能体
+- `train.py` — 训练脚本
+- `play.py` — 测试/对弈脚本
+- `game.py` / `*_env.py` — 环境逻辑
 
-## 🚀 How to Use These Projects
-
-### Recommended Order:
-1. **Start with Tic-Tac-Toe** — simplest, easiest to understand
-2. **Move to Frozen Lake** — learn about grid worlds
-3. **Try Blackjack** — see Q-learning with probability
-4. **Explore DQN** — see how neural networks extend Q-learning
-
-### Each Project Contains:
-- `README.md` — Explanation of the concept
-- `game.py` or `env.py` — The game environment
-- `agent.py` — The Q-learning agent
-- `train.py` — Training script
-- `play.py` — Play against trained agent (if applicable)
-
----
-
-## 🧠 Core Concepts You'll Learn
-
-### Project 01: Tic-Tac-Toe
-- **Q-Learning basics**
-- **State representation**
-- **Reward design**
-- **Self-play learning**
-
-### Project 02: Frozen Lake
-- **Grid world environments**
-- **Stochastic transitions**
-- **Sparse rewards**
-- **Exploration vs exploitation**
-
-### Project 03: Blackjack
-- **Probability in RL**
-- **Card counting concepts**
-- **Risk/reward decisions**
-- **State aggregation**
-
-### Project 04: Simple DQN
-- **Neural networks for RL**
-- **Experience replay**
-- **Target networks**
-- **Continuous state spaces**
-
----
-
-## 🎯 Learning Path
-
-```
-Tic-Tac-Toe ──→ Frozen Lake ──→ Blackjack ──→ DQN
-    │              │              │            │
-    ▼              ▼              ▼            ▼
- Q-table      Stochastic     Probability   Neural
- basics       world          decisions     networks
-```
-
----
-
-## 📦 Requirements
-
-All projects use basic Python libraries:
+## 运行
 
 ```bash
-pip install numpy pandas
-```
-
-Some projects may need additional libraries (noted in each project's README).
-
----
-
-## 🎮 Quick Start
-
-```bash
-# Navigate to a project
-cd ~/Desktop/rl_projects/01_tic_tac_toe
-
-# Train the agent
+cd <project_dir>
 python train.py
-
-# Play against it
 python play.py
 ```
-
----
-
-## 💡 Tips for Learning
-
-1. **Read the code comments** — Every important line is explained
-2. **Run the training** — Watch the agent learn
-3. **Experiment** — Change parameters and see what happens
-4. **Read the README** — Understand the concepts before diving into code
-
----
-
-Happy Learning! 🚀
-
-*Created by Punk ⚡*

@@ -1,118 +1,31 @@
-# Frozen Lake Q-Learning 🧊
+# 02_frozen_lake
 
-Learn about **stochastic environments** and **sparse rewards** with a slippery frozen lake!
+随机环境下的 Q-Learning：冰面迷宫。
 
----
-
-## 🎯 What You'll Learn
-
-| Concept | How It's Used Here |
-|---------|-------------------|
-| **Stochastic transitions** | Actions don't always work (ice is slippery!) |
-| **Sparse rewards** | Only get reward when reaching goal |
-| **Exploration** | Must explore to find safe paths |
-| **Grid world** | Classic RL environment type |
-
----
-
-## 🧊 The Game
+## 环境
 
 ```
-S F F F       S = Start (safe)
-F H F H       F = Frozen (safe)
-F F F H       H = Hole (fall in = game over!)
-H F F G       G = Goal (+1 reward)
+S F F F    S=起点  F=冰面(安全)  H=洞  G=目标
+F H F H
+F F F H
+H F F G
 ```
 
-**Goal:** Cross the frozen lake without falling in holes!
+## 核心概念
 
----
+| 概念 | 说明 |
+|------|------|
+| 随机转移 | 冰面打滑，动作只有 33% 概率生效 |
+| 稀疏奖励 | 只有到达目标/掉入洞时才有奖励 |
+| 状态空间 | 16 个状态 |
 
-## ⚠️ The Twist: Slippery Ice!
+## 运行
 
-| Action | What You Want | What Might Happen |
-|--------|---------------|-------------------|
-| Move Up | Go up | 33% up, 33% left, 33% right |
-| Move Down | Go down | 33% down, 33% left, 33% right |
-| Move Left | Go left | 33% left, 33% up, 33% down |
-| Move Right | Go right | 33% right, 33% up, 33% down |
-
-**This is called a STOCHASTIC environment!**
-
-**💡 Key Insight:** Even "bad" moves (like trying to walk into a wall) can be useful because you might slip in a good direction!
-
----
-
-## 📊 Reward Structure:
-
-| Situation | Reward | Meaning |
-|-----------|--------|---------|
-| 🏁 Reach goal | +1.0 | Win! |
-| 💀 Fall in hole | -1.0 | Lose! |
-| ⬜ Normal move | 0.0 | Continue playing |
-| 🧱 Hit wall | 0.0 | Might slip elsewhere! |
-
----
-
-## 🚀 How to Run
-
-### Step 1: Train the Agent
 ```bash
-cd /home/admin/Desktop/rl_projects/02_frozen_lake
-conda activate qlearning
-python train.py
+python train.py   # 训练（10000 局）
+python play.py    # 观看智能体行动
 ```
 
-### Step 2: Watch It Play
-```bash
-python play.py
-```
+## 预期结果
 
----
-
-## 🧠 Key Differences from Tic-Tac-Toe
-
-| Feature | Tic-Tac-Toe | Frozen Lake |
-|---------|-------------|-------------|
-| **Transitions** | Deterministic | Stochastic (random) |
-| **Rewards** | Frequent | Sparse (only at goal) |
-| **State size** | ~5,000 states | 16 states |
-| **Difficulty** | Medium | Easy states, hard randomness |
-
----
-
-## 🎯 Expected Results
-
-After training:
-- Agent should reach goal ~70-75% of the time (not 100% due to slippery ice!)
-- Agent learns safe paths that avoid holes
-- Agent learns to recover from slips
-
----
-
-## 💡 Experiments to Try
-
-1. **Non-slippery mode** — Set `is_slippery=False`. Can agent reach 100%?
-2. **Different maps** — Create harder/easier maps
-3. **Discount factor** — What if γ = 0.5 (short-term thinking)?
-4. **More holes** — Make the map harder
-
----
-
-## 📊 Comparison: Deterministic vs Stochastic
-
-### Deterministic (like Tic-Tac-Toe)
-```
-State → Action → Next State (ALWAYS same result)
-```
-
-### Stochastic (Frozen Lake)
-```
-State → Action → Next State (RANDOM result!)
-```
-
-**This is why Q-learning is powerful — it works even when outcomes are uncertain!**
-
----
-
-*Created by Punk ⚡*
+成功率约 70-75%（随机性限制）。
