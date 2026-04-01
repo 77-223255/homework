@@ -32,9 +32,8 @@ class SimpleTokenizerV2:
         return text
 
 tokenizer = SimpleTokenizerV2(vocab)
-text1 = "Hello, do you like tea?"
-text2 = "In the sunlit terraces of the palace."
-text = " <|endoftext|> ".join((text1, text2))
-ids = tokenizer.encode(text)
-print(ids)
-print(tokenizer.decode(ids))
+with open("the-verdict.txt", "r", encoding="utf-8") as f:
+    raw_text = f.read()
+
+enc_text = tokenizer.encode(raw_text)
+print(len(enc_text))
