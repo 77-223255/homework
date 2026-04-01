@@ -1,6 +1,6 @@
 # llmbuild
 
-学习《Build a Large Language Model (From Scratch)》的代码实现。
+从零构建 LLM。
 
 ## 目录结构
 
