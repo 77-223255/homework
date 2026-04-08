@@ -15,45 +15,7 @@ GPT_CONFIG_124M = {
     "qkv_bias": False
 }
 
-class DummyGPTModel(nn.Module):
-    def __init__(self, cfg):
-        super().__init__()
-        self.tok_emb = nn.Embedding(cfg["vocab_size"], cfg["emb_dim"])
-        self.pos_emb = nn.Embedding(cfg["context_length"], cfg["emb_dim"])
-        self.drop_emb = nn.Dropout(cfg["drop_rate"])
-        self.trf_blocks = nn.Sequential(
-            *[DummyTransformerBlock(cfg) for _ in range(cfg["n_layers"])]
-        )
-        self.final_norm = DummyLayerNorm(cfg["emb_dim"])
-        self.out_head = nn.Linear(
-            cfg["emb_dim"], cfg["vocab_size"], bias=False
-        )
 
-    def forward(self, in_idx):
-        batch_size, seq_len = in_idx.shape
-        tok_embeds = self.tok_emb(in_idx)
-        pos_embeds = self.pos_emb(torch.arange(seq_len, device=in_idx.device))
-        x = tok_embeds + pos_embeds
-        x = self.drop_emb(x)
-        x = self.trf_blocks(x)
-        x = self.final_norm(x)
-        logits = self.out_head(x)
-        return logits
-
-class DummyTransformerBlock(nn.Module):
-    def __init__(self, cfg):
-        super().__init__()
-
-    def forward(self, x):
-        return x
-
-
-class DummyLayerNorm(nn.Module):
-    def __init__(self, normalized_shape, eps=1e-5):
-        super().__init__()
-        
-    def forward(self, x):
-        return x
 
 class LayerNorm(nn.Module):
     def __init__(self, emb_dim):
@@ -89,26 +51,6 @@ class FeedForward(nn.Module):
     def forward(self, x):
         return self.layers(x)
 
-class ExampleDeepNeuralNetwork(nn.Module):
-    def __init__(self, layer_sizes, use_shortcut):
-        super().__init__()
-        self.use_shortcut = use_shortcut
-        self.layers = nn.ModuleList([
-            nn.Sequential(nn.Linear(layer_sizes[0], layer_sizes[1]), GELU()),
-            nn.Sequential(nn.Linear(layer_sizes[1], layer_sizes[2]), GELU()),
-            nn.Sequential(nn.Linear(layer_sizes[2], layer_sizes[3]), GELU()),
-            nn.Sequential(nn.Linear(layer_sizes[3], layer_sizes[4]), GELU()),
-            nn.Sequential(nn.Linear(layer_sizes[4], layer_sizes[5]), GELU())
-        ])
-
-    def forward(self, x):
-        for layer in self.layers:
-            layer_output = layer(x)
-            if self.use_shortcut and x.shape == layer_output.shape:
-                x = x + layer_output
-            else:
-                x = layer_output
-        return x
 
 class TransformerBlock(nn.Module):
     def __init__(self, cfg):
@@ -135,10 +77,51 @@ class TransformerBlock(nn.Module):
 
         shortcut = x
         x = self.norm2(x)
-        x = self.ff(X)
+        x = self.ff(x)
         x = self.drop_shortcut(x)
         x = x + shortcut
         return x
+
+class GPTModel(nn.Module):
+    def __init__(self, cfg):
+        super().__init__()
+        self.tok_emb = nn.Embedding(cfg["vocab_size"], cfg["emb_dim"])
+        self.pos_emb = nn.Embedding(cfg["context_length"], cfg["emb_dim"])
+        self.drop_emb = nn.Dropout(cfg["drop_rate"])
+
+        self.trf_blocks = nn.Sequential(
+            *[TransformerBlock(cfg) for _ in range(cfg["n_layers"])]
+        )
+
+        self.final_norm = LayerNorm(cfg["emb_dim"])
+        self.out_head = nn.Linear(
+            cfg["emb_dim"], cfg["vocab_size"], bias=False
+        )
+
+    def forward(self, in_idx):
+        batch_size, seq_len = in_idx.shape
+        tok_embeds = self.tok_emb(in_idx)
+
+        pos_embeds = self.pos_emb(torch.arange(seq_len, device=in_idx.device))
+        x = tok_embeds + pos_embeds
+        x = self.drop_emb(x)
+        x = self.trf_blocks(x)
+        x = self.final_norm(x)
+        logits = self.out_head(x)
+        return logits
+        
+def generate_text_simple(model, idx, max_new_tokens, context_size):
+    for _ in range(max_new_tokens):
+        idx_cond = idx[:, -context_size:]
+        with torch.no_grad():
+            logits = model(idx_cond)
+
+        logits = logits[:, -1, :]
+        probas = torch.softmax(logits, dim=-1)
+        idx_next = torch.argmax(probas, dim=-1, keepdim=True)
+        idx = torch.cat((idx, idx_next), dim=-1)
+
+    return idx
         
 tokenizer = tiktoken.get_encoding("gpt2")
 batch = []
@@ -149,43 +132,20 @@ batch.append(torch.tensor(tokenizer.encode(txt1)))
 batch.append(torch.tensor(tokenizer.encode(txt2)))
 batch = torch.stack(batch, dim=0)
 
-torch.manual_seed(123)
-model = DummyGPTModel(GPT_CONFIG_124M)
-logits = model(batch)
-
 
 torch.manual_seed(123)
-batch_example = torch.randn(2, 5)
-layer = nn.Sequential(nn.Linear(5, 6), nn.ReLU())
-out = layer(batch_example)
-ln = LayerNorm(emb_dim=5)
-out_ln = ln(batch_example)
-mean = out_ln.mean(dim=-1, keepdim=True)
-var = out_ln.var(dim=-1, unbiased=False, keepdim=True)
+model = GPTModel(GPT_CONFIG_124M)
 
-gelu, relu = GELU(), nn.ReLU()
-
-ffn = FeedForward(GPT_CONFIG_124M)
-x = torch.rand(2, 3, 768)
-out = ffn(x)
-
-def print_gradients(model, x):
-    output = model(x)
-    target = torch.tensor([[0.]])
-
-    loss = nn.MSELoss()
-    loss = loss(output, target)
-
-    loss.backward()
-
-    for name, param in model.named_parameters():
-        if 'weight' in name:
-            print(f"{name} has gradient mean of {param.grad.abs().mean().item()}")
-
-layer_sizes = [3, 3, 3, 3, 3, 1]
-sample_input = torch.tensor([[1.0, 0., -1.]])
-torch.manual_seed(123)
-model_without_shortcut = ExampleDeepNeuralNetwork(
-    layer_sizes, use_shortcut=True
+out = model(batch)
+start_context = "Hello, I am"
+encoded = tokenizer.encode(start_context)
+encoded_tensor = torch.tensor(encoded).unsqueeze(0)
+model.eval()
+out = generate_text_simple(
+    model=model,
+    idx=encoded_tensor,
+    max_new_tokens=6,
+    context_size=GPT_CONFIG_124M["context_length"]
 )
-print_gradients(model_without_shortcut, sample_input)
+decoded_text = tokenizer.decode(out.squeeze(0).tolist())
+print(decoded_text)
