@@ -4,7 +4,9 @@
 GPT 模型架构实现：Transformer Block、GPTModel 及文本生成。
 
 ## 文件说明
+🟢 用户运行文件  🟡 库文件  🔵 数据文件
+
 | 文件 | 说明 |
 |------|------|
-| <span style="color: green">`GPT_main_structure.py`</span> | GPT 模型主结构：LayerNorm、GELU、FeedForward、TransformerBlock、GPTModel 及文本生成函数 |
-| <span style="color: orange">`self_attention_pack.py`</span> | 注意力机制模块：SelfAttention、CausalAttention、MultiHeadAttention 实现 |
+| 🟢 `GPT_main_structure.py` | GPT 模型主结构：LayerNorm、GELU、FeedForward、TransformerBlock、GPTModel 及文本生成函数 |
+| 🟡 `self_attention_pack.py` | 注意力机制模块：SelfAttention、CausalAttention、MultiHeadAttention 实现 |
